@@ -1,0 +1,117 @@
+﻿@* Copyright (C) TBC Bank. All Rights Reserved.*@
+@using Discounts.Application.DTOs.Offer
+@model CreateOfferDto
+
+@{
+    ViewData["Title"] = "Create Offer";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h3 class="card-title mb-0"><i class="bi bi-plus-circle"></i> Create New Offer</h3>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create" method="post" enctype="multipart/form-data">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        @* basic inf*@
+                        <div class="form-group mb-3">
+                            <label asp-for="Title" class="form-label fw-bold">Offer Title</label>
+                            <input asp-for="Title" class="form-control" placeholder="e.g. 50% Off Sushi Platter" />
+                            <span asp-validation-for="Title" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Description" class="form-label fw-bold">Description</label>
+                            <textarea asp-for="Description" class="form-control" rows="3" placeholder="Describe the deal..."></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+
+                        @* category and img*@
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="CategoryId" class="form-label fw-bold">Category</label>
+                                <select asp-for="CategoryId" class="form-select" asp-items="ViewBag.Categories">
+                                    <option value="">-- Select Category --</option>
+                                </select>
+                                <span asp-validation-for="CategoryId" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="ImageUrl" class="form-label fw-bold">Image URL</label>
+                                <input asp-for="ImageUrl" class="form-control" placeholder="https://..." />
+                                <span asp-validation-for="ImageUrl" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        @* pricing  *@
+                        <div class="row mb-3 p-3 bg-light rounded mx-1">
+                            <div class="col-md-4">
+                                <label asp-for="OriginalPrice" class="form-label fw-bold">Original Price ($)</label>
+                                <input asp-for="OriginalPrice" class="form-control" id="originalPrice" type="number" step="0.01" />
+                                <span asp-validation-for="OriginalPrice" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="DiscountPrice" class="form-label fw-bold">Discount Price ($)</label>
+                                <input asp-for="DiscountPrice" class="form-control" id="discountPrice" type="number" step="0.01" />
+                                <span asp-validation-for="DiscountPrice" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4 d-flex align-items-end">
+                                <span class="badge bg-danger fs-6 w-100 py-2" id="discountBadge">0% OFF</span>
+                            </div>
+                        </div>
+
+                        @*stock and dates*@
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label asp-for="TotalQuantity" class="form-label fw-bold">Quantity (Stock)</label>
+                                <input asp-for="TotalQuantity" class="form-control" type="number" value="50" />
+                                <span asp-validation-for="TotalQuantity" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="ValidFrom" class="form-label fw-bold">Valid From</label>
+                                <input asp-for="ValidFrom" class="form-control" type="date" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                                <span asp-validation-for="ValidFrom" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="ValidUntil" class="form-label fw-bold">Valid Until</label>
+                                <input asp-for="ValidUntil" class="form-control" type="date" value="@DateTime.Now.AddDays(7).ToString("yyyy-MM-dd")" />
+                                <span asp-validation-for="ValidUntil" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-success btn-lg">Create Offer</button>
+                            <a asp-action="Dashboard" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@*script fo discount badge*@
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        const originalInput = document.getElementById('originalPrice');
+        const discountInput = document.getElementById('discountPrice');
+        const badge = document.getElementById('discountBadge');
+
+        function updateBadge() {
+            const orig = parseFloat(originalInput.value) || 0;
+            const disc = parseFloat(discountInput.value) || 0;
+            if (orig > 0 && disc < orig) {
+                const percent = Math.round(((orig - disc) / orig) * 100);
+                badge.textContent = percent + "% OFF";
+            } else {
+                badge.textContent = "0% OFF";
+            }
+        }
+
+        originalInput.addEventListener('input', updateBadge);
+        discountInput.addEventListener('input', updateBadge);
+    </script>
+}

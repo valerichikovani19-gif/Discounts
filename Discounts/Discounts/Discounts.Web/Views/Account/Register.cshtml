@@ -1,0 +1,81 @@
+﻿@* Copyright (C) TBC Bank. All Rights Reserved.*@
+@model Discounts.Web.Models.Requests.RegisterRequestModel
+
+@{
+    ViewData["Title"] = "Register";
+}
+
+<div class="row justify-content-center mt-5 mb-5">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-sm border-0 rounded-4">
+            <div class="card-body p-5">
+
+                <div class="text-center mb-4">
+                    <i class="bi bi-person-plus-fill text-primary" style="font-size: 3rem;"></i>
+                    <h2 class="fw-bold mt-2">Create an Account</h2>
+                    <p class="text-muted">Join Discounts.ge to get the best local deals</p>
+                </div>
+
+                <form id="registerForm" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3 small" role="alert"></div>
+
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-6 form-floating">
+                            <input asp-for="FirstName" class="form-control" autocomplete="given-name" aria-required="true" placeholder="First Name" />
+                            <label asp-for="FirstName" class="ms-1 text-muted">First Name</label>
+                            <span asp-validation-for="FirstName" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6 form-floating">
+                            <input asp-for="LastName" class="form-control" autocomplete="family-name" aria-required="true" placeholder="Last Name" />
+                            <label asp-for="LastName" class="ms-1 text-muted">Last Name</label>
+                            <span asp-validation-for="LastName" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        <input asp-for="Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                        <label asp-for="Email" class="text-muted"><i class="bi bi-envelope me-1"></i> Email Address</label>
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        <select asp-for="Role" class="form-select" aria-required="true">
+                            <option value="Customer">🛍️ Customer</option>
+                            <option value="Merchant">🏪 Merchant</option>
+                        </select>
+                        <label asp-for="Role" class="text-muted">I want to register as</label>
+                        <span asp-validation-for="Role" class="text-danger small"></span>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        <input asp-for="Password" type="password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
+                        <label asp-for="Password" class="text-muted"><i class="bi bi-lock me-1"></i> Password</label>
+                        <span asp-validation-for="Password" class="text-danger small"></span>
+                    </div>
+
+                    <div class="form-floating mb-4">
+                        <input asp-for="ConfirmPassword" type="password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
+                        <label asp-for="ConfirmPassword" class="text-muted"><i class="bi bi-check-circle me-1"></i> Confirm Password</label>
+                        <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+                    </div>
+
+                    <button id="registerSubmit" type="submit" class="btn btn-primary w-100 py-3 fs-6 fw-bold rounded-pill mb-4 shadow-sm">
+                        Create Account
+                    </button>
+
+                    <div class="text-center border-top pt-3">
+                        <p class="text-muted small mb-0">
+                            Already have an account?
+                            <a asp-action="Login" class="text-decoration-none fw-bold text-primary">Log in here</a>
+                        </p>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

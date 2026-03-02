@@ -1,0 +1,114 @@
+@* Copyright (C) TBC Bank. All Rights Reserved.*@
+@using Discounts.Application.DTOs.Offer
+@model List<OfferDto>
+
+@{
+    ViewData["Title"] = "Active Deals";
+}
+
+<div class="bg-light p-5 rounded mb-5 text-center shadow-sm">
+    <h1 class="display-4 fw-bold">Daily Discounts</h1>
+    <p class="lead">Find the best deals in your city, curated just for you.</p>
+</div>
+
+@* search & filter *@
+<div class="row mb-4">
+    <div class="col-md-10 mx-auto">
+        <form asp-action="Index" asp-controller="Home" method="get" class="card p-3 shadow-sm border-0">
+            <div class="row g-2">
+                @* search text *@
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+                        <input name="search" class="form-control border-start-0" type="search"
+                               placeholder="Search for deals..."
+                               value="@ViewBag.CurrentSearch">
+                    </div>
+                </div>
+
+                @* category dropdown *@
+                <div class="col-md-3">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white"><i class="bi bi-tags"></i></span>
+                        <select name="categoryId" class="form-select border-start-0" asp-items="ViewBag.Categories">
+                            <option value="">All Categories</option>
+                        </select>
+                    </div>
+                </div>
+
+                @*price *@
+                <div class="col-md-2">
+                    <input name="minPrice" class="form-control" type="number"
+                           placeholder="Min $" value="@ViewBag.CurrentMinPrice">
+                </div>
+                <div class="col-md-2">
+                    <input name="maxPrice" class="form-control" type="number"
+                           placeholder="Max $" value="@ViewBag.CurrentMaxPrice">
+                </div>
+
+                @* submitbutton *@
+                <div class="col-md-1 d-grid">
+                    <button type="submit" class="btn btn-primary"><i class="bi bi-funnel-fill"></i></button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+@* grid *@
+<div class="container">
+    @if (Model == null || !Model.Any())
+    {
+        <div class="text-center mt-5">
+            <img src="https://placehold.co/200x200?text=Empty" class="mb-3 opacity-50" />
+            <h3 class="text-muted">No active offers right now.</h3>
+            <p>Check back later or register as a Merchant to add one!</p>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var offer in Model)
+            {
+                <partial name="_OfferCard" model="offer" />
+            }
+        </div>
+    }
+</div>
+@* Pagination *@
+@if (ViewBag.TotalPages > 1)
+{
+    <nav aria-label="Page navigation" class="mt-5 mb-5">
+        <ul class="pagination justify-content-center">
+            
+            @* previous *@
+            <li class="page-item @(ViewBag.HasPrevious == true ? "" : "disabled")">
+                <a class="page-link" 
+                   asp-action="Index" 
+                   asp-route-pageIndex="@(ViewBag.CurrentPage - 1)"
+                   asp-route-search="@ViewBag.CurrentSearch"
+                   asp-route-categoryId="@ViewBag.CurrentCategory"
+                   asp-route-minPrice="@ViewBag.CurrentMinPrice"
+                   asp-route-maxPrice="@ViewBag.CurrentMaxPrice">
+                    <i class="bi bi-chevron-left"></i> Previous
+                </a>
+            </li>
+
+            <li class="page-item disabled">
+                <span class="page-link">Page @ViewBag.CurrentPage of @ViewBag.TotalPages</span>
+            </li>
+
+            @* next *@
+            <li class="page-item @(ViewBag.HasNext == true ? "" : "disabled")">
+                <a class="page-link" 
+                   asp-action="Index" 
+                   asp-route-pageIndex="@(ViewBag.CurrentPage + 1)"
+                   asp-route-search="@ViewBag.CurrentSearch"
+                   asp-route-categoryId="@ViewBag.CurrentCategory"
+                   asp-route-minPrice="@ViewBag.CurrentMinPrice"
+                   asp-route-maxPrice="@ViewBag.CurrentMaxPrice">
+                    Next <i class="bi bi-chevron-right"></i>
+                </a>
+            </li>
+        </ul>
+    </nav>
+}

@@ -1,0 +1,134 @@
+﻿@* Copyright (C) TBC Bank. All Rights Reserved.*@
+@using Discounts.Application.DTOs.Offer
+@model List<OfferDto>
+
+@{
+    ViewData["Title"] = "My Offers";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-list-check"></i> My Offers</h2>
+        <a asp-action="Create" class="btn btn-success"><i class="bi bi-plus"></i> Add New</a>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="table-responsive shadow-sm rounded">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="bg-light">
+                <tr>
+                    <th>Offer</th>
+                    <th>Price</th>
+                    <th>Stock</th>
+                    <th>Status</th>
+                    <th>Valid Until</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var offer in Model)
+                {
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <img src="@(string.IsNullOrEmpty(offer.ImageUrl) ? "https://placehold.co/50?text=IMG" : offer.ImageUrl)"
+                                     alt="@offer.Title"
+                                     class="rounded me-3"
+                                     style="width: 50px; height: 50px; object-fit: cover;">
+                                <div>
+                                    <div class="fw-bold">@offer.Title</div>
+                                    <div class="text-muted small">@offer.CategoryName</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>$@offer.DiscountPrice.ToString("0.00") <small class="text-muted text-decoration-line-through">$@offer.OriginalPrice.ToString("0.00")</small></td>
+                        <td>
+                            @if (offer.AvailableQuantity == 0)
+                            {
+                                <span class="badge bg-danger">Sold Out</span>
+                            }
+                            else
+                            {
+                                @offer.AvailableQuantity
+                                <span class="text-muted">/ @offer.TotalQuantity</span>
+                            }
+                        </td>
+                        <td>
+                            @switch (offer.Status)
+                            {
+                                case "Active":
+                                    <span class="badge bg-success">Active</span>
+                                    break;
+                                case "Pending":
+                                    <span class="badge bg-warning text-dark">Pending</span>
+                                    break;
+                                case "Rejected":
+                                    <span class="badge bg-danger">Rejected</span>
+                                    break;
+                                case "Expired":
+                                    <span class=\"badge bg-secondary\">Expired</span>
+                                    break;
+                            }
+                        </td>
+                        <td>@offer.ValidUntil.ToShortDateString()</td>
+
+                        <td>
+                            <div class="btn-group" role="group">
+                                @* view button *@
+                                <a asp-controller="Home" asp-action="Details" asp-route-id="@offer.Id"
+                                   class="btn btn-sm btn-outline-primary" title="View Public Page">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+
+                                @*edit button *@
+                                @if (offer.Status != "Expired")
+                                {
+                                    <form asp-action="Delete" asp-route-id="@offer.Id" method="post" style="display:inline;"
+                                          onsubmit="return confirm('Are you sure? This will remove the offer.');">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                }
+                                @if (offer.Status == "Rejected")
+                                {
+                                    <div class="d-flex align-items-center justify-content-center">
+                                        <span class="badge bg-danger">Rejected</span>
+
+                                        @* popover button *@
+                                        <button type="button" class="btn btn-sm btn-outline-danger ms-2"
+                                                data-bs-container="body"
+                                                data-bs-toggle="popover"
+                                                data-bs-placement="right"
+                                                data-bs-trigger="focus"
+                                                title="Rejection Reason"
+                                                data-bs-content="@offer.RejectionReason">
+                                            <i class="bi bi-question-circle"></i> Why?
+                                        </button>
+                                    </div>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+@* direct init*@
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Initialize Popovers
+        var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+        var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+            return new bootstrap.Popover(popoverTriggerEl);
+        });
+    });
+</script>

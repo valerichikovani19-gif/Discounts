@@ -1,0 +1,121 @@
+﻿@* Copyright (C) TBC Bank. All Rights Reserved.*@
+@using Discounts.Application.DTOs.Offer
+@model OfferDto
+
+@{
+    ViewData["Title"] = Model.Title;
+    var percentage = (int)((1 - (Model.DiscountPrice / Model.OriginalPrice)) * 100);
+    var isSoldOut = Model.AvailableQuantity <= 0;
+    var isExpired = Model.ValidUntil < DateTime.UtcNow;
+}
+
+<div class="container mt-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@Model.Title</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="position-relative">
+                    <img src="@(string.IsNullOrEmpty(Model.ImageUrl) ? "https://placehold.co/800x400?text=No+Image" : Model.ImageUrl)"
+                         class="card-img-top" alt="@Model.Title" style="max-height: 400px; object-fit: cover;">
+                    <span class="position-absolute top-0 end-0 badge bg-danger m-3 fs-5 shadow">
+                        -@percentage% OFF
+                    </span>
+                </div>
+                <div class="card-body p-4">
+                    <h1 class="card-title fw-bold mb-3">@Model.Title</h1>
+                    <div class="mb-3">
+                        <span class="badge bg-secondary">@Model.CategoryName</span>
+                        <span class="text-muted ms-2">
+                            <i class="bi bi-clock"></i> Valid until: @Model.ValidUntil.ToShortDateString()
+                        </span>
+                    </div>
+                    <hr />
+                    <h5 class="fw-bold">Description</h5>
+                    <p class="card-text text-muted" style="white-space: pre-line;">
+                        @Model.Description
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow border-0 sticky-top" style="top: 2rem;">
+                <div class="card-body p-4">
+                    <h4 class="text-muted">Price</h4>
+                    <div class="d-flex align-items-center mb-3">
+                        <span class="text-decoration-line-through text-muted fs-4 me-3">
+                            $@Model.OriginalPrice.ToString("0.00")
+                        </span>
+                        <span class="text-success fw-bold display-6">
+                            $@Model.DiscountPrice.ToString("0.00")
+                        </span>
+                    </div>
+
+                    @* stock status*@
+                    @if (isSoldOut)
+                    {
+                        <div class="alert alert-danger text-center fw-bold">
+                            Sold Out
+                        </div>
+                    }
+                    else if (isExpired)
+                    {
+                        <div class="alert alert-warning text-center fw-bold">
+                            Offer Expired
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-success py-2">
+                            <small>Only <strong>@Model.AvailableQuantity</strong> items left!</small>
+                        </div>
+
+                        @* logics*@
+                        <div class="d-grid gap-2">
+                            @if (User.Identity!.IsAuthenticated)
+                            {
+                                if (User.IsInRole("Customer"))
+                                {
+                                    <form asp-controller="Coupons" asp-action="Purchase" method="post">
+                                        <input type="hidden" name="offerId" value="@Model.Id" />
+                                        <button type="submit" class="btn btn-success btn-lg w-100 mb-2">
+                                            Buy Now
+                                        </button>
+                                    </form>
+
+                                    <form asp-controller="Coupons" asp-action="Reserve" method="post">
+                                        <input type="hidden" name="offerId" value="@Model.Id" />
+                                        <button type="submit" class="btn btn-outline-primary w-100">
+                                            Reserve for Later
+                                        </button>
+                                    </form>
+                                }
+                                else if (User.IsInRole("Merchant"))
+                                {
+                                    <button class="btn btn-secondary w-100" disabled>
+                                        Merchants cannot buy coupons
+                                    </button>
+                                }
+                            }
+                            else
+                            {
+                                <a asp-controller="Account" asp-action="Login" class="btn btn-primary w-100">
+                                    Login to Buy
+                                </a>
+                                <div class="text-center mt-2">
+                                    <small class="text-muted">Don't have an account? <a asp-controller="Account" asp-action="Register">Register</a></small>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

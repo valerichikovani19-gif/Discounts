@@ -1,0 +1,55 @@
+﻿@* Copyright (C) TBC Bank. All Rights Reserved.*@
+@using Discounts.Application.DTOs.Offer
+@model List<MerchantSalesDto>
+
+@{
+    ViewData["Title"] = "Sales History";
+}
+
+<div class="container mt-4">
+    <h2><i class="bi bi-receipt"></i> Sales History</h2>
+    <hr />
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">No coupons have been sold yet.</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <div class="row mb-3">
+                <div class="col-12 text-end">
+                    <a asp-action="ExportSalesToCsv" asp-controller="Merchant" class="btn btn-success shadow-sm">
+                        <i class="bi bi-file-earmark-spreadsheet me-2"></i> Export to CSV
+                    </a>
+                </div>
+            </div>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Customer</th>
+                        <th>Offer</th>
+                        <th>Coupon Code</th>
+                        <th>Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.PurchasedAt.ToString("g")</td>
+                            <td>
+                                @item.CustomerName <br />
+                                <small class="text-muted">@item.CustomerEmail</small>
+                            </td>
+                            <td>@item.OfferTitle</td>
+                            <td><span class="badge bg-dark">@item.CouponCode</span></td>
+                            <td>$@item.Price.ToString("0.00")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

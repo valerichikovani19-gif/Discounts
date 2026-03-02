@@ -1,0 +1,47 @@
+﻿@* Copyright (C) TBC Bank. All Rights Reserved.*@
+@using Discounts.Application.DTOs.Offer
+@model OfferDto
+
+<div class="col-md-4 col-sm-6 mb-4">
+    <div class="card offer-card h-100">
+
+        <div class="position-relative">
+            <img src="@(string.IsNullOrEmpty(Model.ImageUrl) ? "https://placehold.co/600x400?text=No+Image" : Model.ImageUrl)"
+                 class="card-img-top"
+                 alt="@Model.Title"
+                 style="height: 200px; object-fit: cover;">
+
+            @* discount percentage *@
+            @{
+                var percent = (int)((1 - (Model.DiscountPrice / Model.OriginalPrice)) * 100);
+            }
+            <span class="position-absolute top-0 end-0 badge badge-discount m-3 rounded-pill">
+                -@percent% OFF
+            </span>
+        </div>
+
+        @*body section *@
+        <div class="card-body d-flex flex-column p-4">
+            <h5 class="card-title text-truncate fw-bold mb-1" title="@Model.Title">@Model.Title</h5>
+            <p class="card-text text-primary small mb-3 fw-semibold">
+                <i class="bi bi-tag-fill"></i> @Model.CategoryName
+            </p>
+
+            <div class="mt-auto border-top pt-3">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="lh-1">
+                        <span class="d-block text-muted small mb-1">Price</span>
+                        <span class="price-original me-2">₾@Model.OriginalPrice.ToString("0.00")</span>
+                        <span class="price-discount">₾@Model.DiscountPrice.ToString("0.00")</span>
+                    </div>
+                </div>
+
+                @* action button *@
+                <a asp-controller="Home" asp-action="Details" asp-route-id="@Model.Id"
+                   class="btn btn-primary w-100 py-2">
+                    View Deal <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
